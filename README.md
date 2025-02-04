@@ -11,7 +11,7 @@ Implementation of the training-free length extrapolation method GALI in [A Train
 ## Requirements:
 - Please use the versions of the libraries written in the requirements.txt.
 
-## Baseline Methods Implementations
+## Implementation of Baseline Methods
 
 **SelfExtend** [https://github.com/datamllab/LongLM]
 
@@ -31,13 +31,13 @@ Transformer-based Large Language Models (LLMs) struggle to process inputs exceed
 
 ### 2.1 Setup
 
-- Install the libaries listed in the requirements.txt.
+- Install the required libraries listed in requirements.txt.
 
 - Download the source code.
 
 ### 2.2 Get the model
 
-We provide the GALI implementation based on Llama. The model modification are written in the models/DPI/patches/Llama.py, other help function are written in files in the models/DPI dir. Users can get a GALI-Llama by using the following code:
+We provide a GALI implementation based on LLaMA. The model modifications are implemented in models/DPI/patches/Llama.py, while additional helper functions are located in the models/DPI directory. Users can obtain a GALI-LLaMA model using the following code:
 
 ```python
 from models.DPI.dpi import get_model_and_tokenizer
@@ -48,21 +48,27 @@ ori_max_position_embeddings = 8192 # The initial context window of the LLM defin
 model, tokenizer = get_model_and_tokenizer(model_name, config, method, params, max_position_embeddings=ori_max_position_embeddings)
 
 ```
-User can also use function "get_model_and_tokenizer" in models/DPI/dpi.py to get other baseline models with flash-attention used in our paper, including SelfExtend, ChunkLlama, NTK, Dyn-NTK, ChunkLlama. We also provide an alternative function "get_model_and_tokenizer" for non flash-attention versions for each method in models/DPI/dpi_withoutflash.py. We provide explanation of the params required by each method in the following:
+Users can also utilize the get_model_and_tokenizer function in models/DPI/dpi.py to obtain other baseline models with FlashAttention, including SelfExtend, ChunkLLaMA, NTK, Dyn-NTK, and ChunkLLaMA, as used in our paper.
+
+Additionally, we provide an alternative function for non-FlashAttention versions of each method in models/DPI/dpi_withoutflash.py.
+
+Below is an explanation of the parameters required for each method:
 
 - GALI:
 ```
 method = "dpi"
 params = {
-    # Whether use chunked softmax function when calculating the attention scores. This param can slightly save peek memory.
+    # Whether to use chunked softmax when computing attention scores. This slightly reduces peak memory usage.
     use_chunk_softmax = false, 
-    # The chunk size in our paper. It can be a float number as well, which means the chunk size is dynamic. See the details in get_chunk_size_list function.
+    # The chunk size as defined in our paper. It can also be a float, meaning the chunk size is dynamic. 
+    # See details in the `get_chunk_size_list` function.
     chunk_coe = 3000, 
-    # Whether use attention logit interpolation
+    # Whether to apply attention logit interpolation.
     appro_attn = true, 
-    # The local window in our paper. See the details in construct_new_pi function
+    # The local window size as defined in our paper. See details in the `construct_new_pi` function.
     local_window = 128, 
-    # The noise params used in attention logit interpolation. See the details in attention_score_approximate.
+    # Noise parameters used in attention logit interpolation. 
+    # See details in `attention_score_approximate`.
     noise_type = "gaussian", addon_relcoef = 1,std_base = 1.0, scale_mean = 0, scale_std = 1}
 ```
 
@@ -70,18 +76,17 @@ params = {
 ```
 method = "repro_se"
 params = {
-    # The group size in their paper
+    # The group size as defined in their paper
     group_size = 3,
-    # The window size in thir paper
+    # The window size as defined in thir paper
     window_size = 4096 
-    
-    # In practice, we must ensure that (initial context window - window)*group_size+window >= target context window.}
+    # In practice, we must ensure that (initial context window - window) * group_size + window >= target context window.
 ```
 
 - ChunkLlama:
 ```
 method = "repro_chunkllama"
-params = {} # leave it blank
+params = {} # leave blank
 ```
 
 - NTK:
@@ -117,12 +122,12 @@ params = {
 - Original Llama:
 ```
 method = "repro_original"
-params = {} # leave it blank.
+params = {} # leave blank.
 ```
 
 ### 2.3 Run the experiments
 
-We provide the code for runing the experiments including LongBench, L-Eval, PG19 PPL test, Needle-in-a-stack. Users can use the following code to run the experiments and collect the results.
+We provide scripts for running experiments on LongBench, L-Eval, PG19 PPL Test, and Needle-in-a-Stack. Users can execute the following commands to run experiments and collect results:
 
 ```
 # Run the experiments
@@ -131,11 +136,11 @@ python pred.py --cfg expcfg/longbench_llama2_16k_dpi.toml
 # Evaluate the predictions 
 python eval.py --task longbenh --exp dpi-llama2-7b-4k-to-16k
 
-# Collect the results to the excel file
+# Collect the results into the excel file
 python collect_results.py --task longbenh --exp all
 
 ```
-For different experiments, we only need modify the "task" param in the toml config file. We provide the params requird for each experiments in the following:
+To run different experiments, simply modify the "task" parameter in the TOML config file. The required parameters for each experiment are listed below:
 - LongBench: 
 ```
 task = "longbench"
@@ -147,29 +152,32 @@ task = "leval"
 - PG19
 ```
 task = "pg19"
-stride = 2000 # split the inputs to avoid high peek memory
+stride = 2000 # Split the inputs to avoid high peek memory
 ```
 - Needle-in-a-stack
 ```
 task = "needle"
-times = 20 # repeat 20 times for each length setting
-min_k = 1 # the minimal length of the input, use thousands as the unit.
-max_k = 32 # the maximum length of the input use thousands as the unit.
-gap = 4 # the percentage interval of the lengths
+times = 20  # Repeat 20 times for each length setting.
+min_k = 1   # Minimum input length (in thousands).
+max_k = 32  # Maximum input length (in thousands).
+gap = 4     # Percentage interval of lengths.
 ```
 
 Other important params in the config file:
 ```
-exp_name = 'dpi-llama2-7b-4k-to-16k' # experiment directory to save the results generated by LLM. 
-max_pe = 16384 # 8192, 16384 32768, the target context window defined in our paper
-ori_max_position_embeddings = 4096 # 2048, 4096, 8192, the initial context window defined in our paper
+exp_name = "dpi-llama2-7b-4k-to-16k"  # Directory for storing results generated by the LLM.
+max_pe = 16384  # Target context window as defined in our paper (options: 8192, 16384, 32768).
+ori_max_position_embeddings = 4096  # Initial context window as defined in our paper (options: 2048, 4096, 8192).
 ```
-## Get the analysis results and images
+## Generating Analysis Results and Visualizations
 
-The code for analysis and images in our paper are in the "analysis_paper.ipynb" file. Note that for attention analysis, we average the attention score or logit metrix along the head and layer dimension, i.e., [batch size, layer, head, q_len, k_len] -> [batch size, q_len, k_len]. 
+The code for analysis and visualizations in our paper is available in the analysis_paper.ipynb file.
 
-We also upload our generated images in the directory ./images/
-
+For attention analysis, we average the attention score or logit matrix along the head and layer dimensions:
+```
+[batch size, layer, head, q_len, k_len] → [batch size, q_len, k_len]
+```
+We have also uploaded the generated images in the ./images/ directory.
 
 ------
 
