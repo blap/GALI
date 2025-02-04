@@ -1,0 +1,9 @@
+datasets
+tqdm
+rouge
+jieba
+fuzzywuzzy
+torch==2.5.1 
+transformers==4.46.2
+flash-attn==2.7.0.post2
+einops

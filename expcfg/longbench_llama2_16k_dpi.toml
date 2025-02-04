@@ -1,0 +1,41 @@
+# default parameters
+model = "meta-llama/Llama-2-7b-chat-hf" # "meta-llama/Llama-2-7b-chat-hf" meta-llama/Llama-2-7b-chat-hf
+exp_name = 'dpi-llama2-7b-4k-to-16k' # experiment dir name
+method = 'dpi' # "dpi", "repro_se", "repro_yarn", "repro_ntk", "repro_dynamic_ntk", "repro_chunkllama", "repro_original"
+test = false
+max_pe = 16384 # 16384 32768
+task = 'longbench'
+# ori_max_position_embeddings = 4096
+
+[params]
+## dpi
+use_chunk_softmax = false
+
+chunk_coe = 3000
+appro_attn = true
+local_window = 1
+
+noise_type = "gaussian" # "gaussian"
+addon_relcoef = 1 # 0, 1
+std_base = 1.0
+# scale_max = 1 # 0, 1
+scale_mean = 0 # 0, 1
+scale_std = 1 # 0, 1
+
+## repro_se
+# group_size = 3
+# window_size = 4096 #(original_max_pe-window)*group_size+window >= max_pe. for llama3-8b, 16384 use 4096, 3, 32768 use 2048, 5
+
+
+## repro_yarn
+# factor = 4
+
+## repro_ntk
+# factor = 4 #original_max_pe * factor >= max_pe
+
+## repro_dynamic_ntk
+# factor = 4 #original_max_pe * factor >= max_pe
+
+## repro_chunkllama
+
+## repro_original

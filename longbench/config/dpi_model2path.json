@@ -1,0 +1,4 @@
+{
+    "llama2-7b-chat-4k-to-16k": "meta-llama/Llama-2-7b-chat-hf",
+    "llama3-8b-ins-8k-to-16k": "meta-llama/Meta-Llama-3-8B-Instruct"
+}
