@@ -184,7 +184,7 @@ We have also uploaded the generated images in the ./images/ directory.
 
 If you find our method useful, please kindly cite our paper.
 ```bibtex
-@misc{jin2024llm,
+@misc{yan2025gali,
       title={A Training-Free Length Extrapolation Approach for LLMs: Greedy Attention Logit Interpolation (GALI)
 }, 
       author={Yan Li and Tianyi Zhang and Zechuan Li and Soyeon Caren Han},
