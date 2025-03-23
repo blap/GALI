@@ -48,7 +48,7 @@ ori_max_position_embeddings = 8192 # The initial context window of the LLM defin
 model, tokenizer = get_model_and_tokenizer(model_name, config, method, params, max_position_embeddings=ori_max_position_embeddings)
 
 ```
-Users can also utilize the get_model_and_tokenizer function in models/DPI/dpi.py to obtain other baseline models with FlashAttention, including SelfExtend, ChunkLLaMA, NTK, Dyn-NTK, and ChunkLLaMA, as used in our paper.
+Users can also utilize the get_model_and_tokenizer function in models/DPI/dpi.py to obtain other baseline models with FlashAttention, including SelfExtend, ChunkLLaMA, NTK, Dyn-NTK, and YaRN, as used in our paper.
 
 Additionally, we provide an alternative function for non-FlashAttention versions of each method in models/DPI/dpi_withoutflash.py.
 
