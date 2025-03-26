@@ -14,7 +14,8 @@ from transformers.generation.utils import GenerateEncoderDecoderOutput, Generate
 from models.DPI.help_funcs import *
 import os
 from torch.profiler import profile, record_function, ProfilerActivity
-
+from transformers.modeling_outputs import BaseModelOutputWithPast
+from transformers.cache_utils import StaticCache, DynamicCache  # Ensure StaticCache is imported
 from collections import Counter
 import copy
 
