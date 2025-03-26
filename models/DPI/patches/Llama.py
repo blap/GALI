@@ -4,7 +4,7 @@ from transformers.models.gpt_neox.modeling_gpt_neox import *
 import numpy as np
 import torch.nn as nn
 import math
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple, Union
 import torch.nn.functional as F
 from transformers.cache_utils import Cache
 # from flash_attn import flash_attn_func, flash_attn_varlen_func
